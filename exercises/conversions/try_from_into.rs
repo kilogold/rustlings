@@ -27,8 +27,6 @@ enum IntoColorError {
     IntConversion,
 }
 
-// I AM NOT DONE
-
 // Your task is to complete this implementation and return an Ok result of inner
 // type Color. You need to create an implementation for a tuple of three
 // integers, an array of three integers, and a slice of integers.
@@ -41,19 +39,25 @@ enum IntoColorError {
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = IntoColorError;
     fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
-        if tuple.0 < 0 || tuple.0 > 255 {
-            Err(IntoColorError::IntConversion)
-        } else if tuple.1 < 0 || tuple.1 > 255 {
-            Err(IntoColorError::IntConversion)
-        } else if tuple.2 < 0 || tuple.2 > 255 {
-            Err(IntoColorError::IntConversion)
-        } else {
-            Ok(Color { 
-                red: tuple.0 as u8, 
-                green: tuple.1 as u8, 
-                blue: tuple.2 as u8 
-            })
-        }
+        // if tuple.0 < 0 || tuple.0 > 255 {
+        //     Err(IntoColorError::IntConversion)
+        // } else if tuple.1 < 0 || tuple.1 > 255 {
+        //     Err(IntoColorError::IntConversion)
+        // } else if tuple.2 < 0 || tuple.2 > 255 {
+        //     Err(IntoColorError::IntConversion)
+        // } else {
+        //     Ok(Color { 
+        //         red: tuple.0 as u8, 
+        //         green: tuple.1 as u8, 
+        //         blue: tuple.2 as u8 
+        //     })
+        // }
+
+        Ok(Color { 
+            red: tuple.0.try_into().or(Err(IntoColorError::IntConversion))?, 
+            green: tuple.1.try_into().or(Err(IntoColorError::IntConversion))?, 
+            blue: tuple.2.try_into().or(Err(IntoColorError::IntConversion))? }
+        )
     }
 }
 
@@ -71,15 +75,12 @@ impl TryFrom<&[i16]> for Color {
     fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
         if slice.len() != 3 {
             Err(IntoColorError::BadLen)
-        } else if !(slice.iter().all(|&x| x > 0 && x <= 255)) {
-            Err(IntoColorError::IntConversion) 
         } else {
-
             let mut i = slice.iter();
             Ok(Color { 
-                red: *i.next().unwrap() as u8, 
-                green: *i.next().unwrap() as u8, 
-                blue: *i.next().unwrap() as u8, 
+                red:   (*i.next().unwrap()).try_into().or(Err(IntoColorError::IntConversion))?, 
+                green: (*i.next().unwrap()).try_into().or(Err(IntoColorError::IntConversion))?,
+                blue:  (*i.next().unwrap()).try_into().or(Err(IntoColorError::IntConversion))?,
             })
         }
     }
